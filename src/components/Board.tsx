@@ -3,15 +3,15 @@ import type { GameState } from "../types/game";
 
 type BoardProps = {
   game: GameState;
-  play: (board: number, cell: number) => void;
+  onPlay: (board: number, cell: number) => void;
 };
 
 export default function Board({
   game,
-  play,
+  onPlay,
 }: BoardProps) {
   return (
-    <section className="mt-8 w-full flex justify-center">
+    <section className="mt-8 flex w-full justify-center">
       <div className="grid grid-cols-3 gap-5 rounded-3xl border border-zinc-800 bg-zinc-900/40 p-6">
         {game.boards.map((board, index) => (
           <MiniBoard
@@ -23,7 +23,7 @@ export default function Board({
               game.activeBoard === null ||
               game.activeBoard === index
             }
-            onPlay={play}
+            onPlay={onPlay}
           />
         ))}
       </div>
