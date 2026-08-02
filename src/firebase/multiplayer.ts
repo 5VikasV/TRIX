@@ -3,6 +3,7 @@ import {
   getDoc,
   setDoc,
   updateDoc,
+  deleteDoc,
   serverTimestamp,
   onSnapshot,
 } from "firebase/firestore";
@@ -48,13 +49,9 @@ export async function createRoom() {
       boards: Array.from({ length: 9 }, () => ({
         cells: Array(9).fill(null),
       })),
-
       boardWinners: Array(9).fill(null),
-
       activeBoard: null,
-
       currentPlayer: "X",
-
       winner: null,
     },
   });
@@ -76,7 +73,7 @@ export async function joinRoom(roomId: string) {
   const data = snapshot.data();
 
   if (data.players.O) {
-    throw new Error("Room is already full");
+    throw new Error("Room already full");
   }
 
   await updateDoc(roomRef, {
@@ -87,12 +84,39 @@ export async function joinRoom(roomId: string) {
   return true;
 }
 
+export async function leaveRoom(roomId: string) {
+  const roomRef = doc(db, "rooms", roomId);
+
+  const snapshot = await getDoc(roomRef);
+
+  if (!snapshot.exists()) return;
+
+  const room = snapshot.data();
+
+  const uid = auth.currentUser?.uid;
+
+  if (room.players.X === uid) {
+    await deleteDoc(roomRef);
+    return;
+  }
+
+  if (room.players.O === uid) {
+    await updateDoc(roomRef, {
+      "players.O": null,
+      status: "waiting",
+    });
+  }
+}
+
 export function listenToRoom(
   roomId: string,
-  callback: (room: any) => void
+  callback: (room: any | null) => void
 ) {
   return onSnapshot(doc(db, "rooms", roomId), (snapshot) => {
-    if (!snapshot.exists()) return;
+    if (!snapshot.exists()) {
+      callback(null);
+      return;
+    }
 
     callback(snapshot.data());
   });
