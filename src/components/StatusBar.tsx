@@ -1,6 +1,6 @@
 import type { Player } from "../types/game";
 
-type StatusBarProps = {
+type Props = {
   currentPlayer: Player;
   activeBoard: number | null;
 };
@@ -8,34 +8,57 @@ type StatusBarProps = {
 export default function StatusBar({
   currentPlayer,
   activeBoard,
-}: StatusBarProps) {
+}: Props) {
   return (
-    <div className="mt-8 flex gap-6">
-      <div className="rounded-xl border border-zinc-700 bg-zinc-900 px-6 py-3">
-        <p className="text-xs uppercase tracking-widest text-zinc-500">
+    <section className="mb-10 flex gap-6">
+
+      <div
+        className="
+          min-w-[180px]
+          rounded-2xl
+          border
+          border-white/5
+          bg-[#111113]
+          px-6
+          py-5
+        "
+      >
+        <p className="text-xs uppercase tracking-[0.3em] text-zinc-500">
           Current Player
         </p>
 
         <h2
-          className={`mt-1 text-2xl font-bold ${
-            currentPlayer === "X"
-              ? "text-cyan-400"
-              : "text-orange-400"
-          }`}
+          className="
+            mt-2
+            text-3xl
+            font-bold
+            text-cyan-400
+          "
         >
           {currentPlayer}
         </h2>
       </div>
 
-      <div className="rounded-xl border border-zinc-700 bg-zinc-900 px-6 py-3">
-        <p className="text-xs uppercase tracking-widest text-zinc-500">
+      <div
+        className="
+          min-w-[180px]
+          rounded-2xl
+          border
+          border-white/5
+          bg-[#111113]
+          px-6
+          py-5
+        "
+      >
+        <p className="text-xs uppercase tracking-[0.3em] text-zinc-500">
           Active Board
         </p>
 
-        <h2 className="mt-1 text-2xl font-bold">
-          {activeBoard === null ? "Any" : activeBoard + 1}
+        <h2 className="mt-2 text-3xl font-bold">
+          {activeBoard === null ? "ANY" : activeBoard + 1}
         </h2>
       </div>
-    </div>
+
+    </section>
   );
 }
