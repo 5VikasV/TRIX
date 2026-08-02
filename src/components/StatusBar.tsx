@@ -1,6 +1,8 @@
+import type { Player } from "../types/game";
+
 type StatusBarProps = {
-  currentPlayer: "X" | "O";
-  activeBoard: string;
+  currentPlayer: Player;
+  activeBoard: number | null;
 };
 
 export default function StatusBar({
@@ -8,7 +10,7 @@ export default function StatusBar({
   activeBoard,
 }: StatusBarProps) {
   return (
-    <div className="mt-10 flex flex-wrap justify-center gap-6">
+    <div className="mt-8 flex gap-6">
       <div className="rounded-xl border border-zinc-700 bg-zinc-900 px-6 py-3">
         <p className="text-xs uppercase tracking-widest text-zinc-500">
           Current Player
@@ -30,8 +32,8 @@ export default function StatusBar({
           Active Board
         </p>
 
-        <h2 className="mt-1 text-2xl font-bold text-white">
-          {activeBoard}
+        <h2 className="mt-1 text-2xl font-bold">
+          {activeBoard === null ? "Any" : activeBoard + 1}
         </h2>
       </div>
     </div>

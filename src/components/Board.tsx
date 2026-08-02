@@ -1,37 +1,29 @@
 import MiniBoard from "./MiniBoard";
-import type { CellValue } from "../types/game";
+import type { GameState } from "../types/game";
 
 type BoardProps = {
-  board: CellValue[];
-  onPlay: (index: number) => void;
+  game: GameState;
+  play: (board: number, cell: number) => void;
 };
 
 export default function Board({
-  board,
-  onPlay,
+  game,
+  play,
 }: BoardProps) {
   return (
     <section className="mt-8 w-full flex justify-center">
-      <div
-        className="
-          grid
-          grid-cols-3
-          gap-5
-          rounded-3xl
-          border
-          border-zinc-800
-          bg-zinc-900/40
-          backdrop-blur-xl
-          p-6
-          shadow-2xl
-        "
-      >
-        {Array.from({ length: 9 }).map((_, index) => (
+      <div className="grid grid-cols-3 gap-5 rounded-3xl border border-zinc-800 bg-zinc-900/40 p-6">
+        {game.boards.map((board, index) => (
           <MiniBoard
             key={index}
             board={board}
-            onPlay={onPlay}
-            active={index === 4}
+            winner={game.boardWinners[index]}
+            boardIndex={index}
+            active={
+              game.activeBoard === null ||
+              game.activeBoard === index
+            }
+            onPlay={play}
           />
         ))}
       </div>

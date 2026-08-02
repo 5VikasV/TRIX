@@ -1,7 +1,7 @@
-import type { CellValue } from "../types/game";
+import type { Cell as CellType } from "../types/game";
 
 type CellProps = {
-  value: CellValue;
+  value: CellType;
   onClick: () => void;
 };
 
@@ -24,6 +24,7 @@ export default function Cell({
         transition-all
         duration-200
         hover:border-cyan-400
+        hover:bg-zinc-800
         hover:scale-105
         active:scale-95
         flex
