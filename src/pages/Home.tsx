@@ -72,9 +72,9 @@ export default function Home({
 
         <div className="my-8 border-t border-zinc-800"></div>
 
-        <div>
+        <div className={inviteMode ? "mt-8" : ""}>
           <p className="mb-2 text-sm font-semibold uppercase tracking-wider text-zinc-400">
-            Your Name
+            Room Code
           </p>
 
           <input
