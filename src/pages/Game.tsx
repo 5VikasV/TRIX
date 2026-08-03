@@ -67,11 +67,11 @@ export default function Game({
         {/* Dark overlay over the wallpaper */}
         <div className="pointer-events-none absolute inset-0 bg-black/30" />
 
-        <div className="relative mx-auto max-w-[1800px] px-8 py-8">
+        <div className="relative mx-auto max-w-[1700px] px-6 py-6">
 
           <Header />
 
-          <div className="mt-8 grid grid-cols-[280px_1fr_280px] gap-8 items-start">
+          <div className="mt-8 grid grid-cols-[250px_minmax(0,1fr)_250px] gap-8 items-start">
 
             <PlayerPanel
               myName={myName}

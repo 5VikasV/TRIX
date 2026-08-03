@@ -21,7 +21,7 @@ export default function Cell({
       className="
         aspect-square
 
-        w-[clamp(3.8rem,5vw,5.5rem)]
+        w-[clamp(3.6rem,4vw,4.6rem)]
 
         rounded-xl
 

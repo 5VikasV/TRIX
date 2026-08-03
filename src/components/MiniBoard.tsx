@@ -27,7 +27,7 @@ export default function MiniBoard({
         grid
         grid-cols-3
 
-        gap-[clamp(0.5rem,0.8vw,1rem)]
+        gap-[clamp(0.45rem,0.6vw,0.75rem)]
 
         rounded-3xl
 
