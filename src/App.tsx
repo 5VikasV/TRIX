@@ -19,6 +19,14 @@ export default function App() {
     setScreen("game");
   }
 
+  function goHome() {
+    setRoomId("");
+    setScreen("home");
+
+    // Remove ?room= from the URL after leaving
+    window.history.replaceState({}, "", window.location.pathname);
+  }
+
   if (screen === "home") {
     return (
       <Home
@@ -36,5 +44,10 @@ export default function App() {
     );
   }
 
-  return <Game roomId={roomId} />;
+  return (
+    <Game
+      roomId={roomId}
+      onLeave={goHome}
+    />
+  );
 }

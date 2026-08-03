@@ -26,7 +26,7 @@ export async function signInGuest() {
   return credential.user;
 }
 
-export async function createRoom() {
+export async function createRoom(playerName: string) {
   await signInGuest();
 
   let roomId = nanoid();
@@ -41,9 +41,15 @@ export async function createRoom() {
     status: "waiting",
 
     players: {
-      X: auth.currentUser?.uid,
+      X: {
+        uid: auth.currentUser?.uid,
+        name: playerName,
+      },
       O: null,
     },
+
+    // NEW
+    startingPlayer: null,
 
     game: {
       boards: Array.from({ length: 9 }, () => ({
@@ -51,7 +57,11 @@ export async function createRoom() {
       })),
       boardWinners: Array(9).fill(null),
       activeBoard: null,
+
+      // Default value. We'll overwrite this after
+      // the host chooses who starts.
       currentPlayer: "X",
+
       winner: null,
     },
   });
@@ -59,7 +69,10 @@ export async function createRoom() {
   return roomId;
 }
 
-export async function joinRoom(roomId: string) {
+export async function joinRoom(
+  roomId: string,
+  playerName: string
+) {
   await signInGuest();
 
   const roomRef = doc(db, "rooms", roomId);
@@ -77,11 +90,27 @@ export async function joinRoom(roomId: string) {
   }
 
   await updateDoc(roomRef, {
-    "players.O": auth.currentUser?.uid,
+    "players.O": {
+      uid: auth.currentUser?.uid,
+      name: playerName,
+    },
     status: "playing",
   });
 
   return true;
+}
+
+// NEW
+export async function chooseStartingPlayer(
+  roomId: string,
+  player: "X" | "O"
+) {
+  const roomRef = doc(db, "rooms", roomId);
+
+  await updateDoc(roomRef, {
+    startingPlayer: player,
+    "game.currentPlayer": player,
+  });
 }
 
 export async function leaveRoom(roomId: string) {
@@ -95,15 +124,16 @@ export async function leaveRoom(roomId: string) {
 
   const uid = auth.currentUser?.uid;
 
-  if (room.players.X === uid) {
+  if (room.players.X?.uid === uid) {
     await deleteDoc(roomRef);
     return;
   }
 
-  if (room.players.O === uid) {
+  if (room.players.O?.uid === uid) {
     await updateDoc(roomRef, {
       "players.O": null,
       status: "waiting",
+      startingPlayer: null,
     });
   }
 }

@@ -1,27 +1,42 @@
+import { useEffect } from "react";
+
 import Header from "../components/Header";
 import StatusBar from "../components/StatusBar";
 import Board from "../components/Board";
 import GameOverModal from "../components/GameOverModal";
+import HostLeftModal from "../components/HostLeftModal";
 
 import useMultiplayerGame from "../hooks/useMultiplayerGame";
 import { leaveRoom } from "../firebase/multiplayer";
 
 type GameProps = {
   roomId: string;
+  onLeave: () => void;
 };
 
 export default function Game({
   roomId,
+  onLeave,
 }: GameProps) {
   const {
+    room,
     game,
     play,
     restart,
     loading,
     opponentLeft,
+    roomClosed,
+    canPlay,
+    isPlayerX,
   } = useMultiplayerGame(roomId);
 
-  if (loading || !game) {
+  useEffect(() => {
+    if (roomClosed) {
+      // HostLeftModal handles this
+    }
+  }, [roomClosed]);
+
+  if (loading || !game || !room) {
     return (
       <main className="min-h-screen flex items-center justify-center bg-zinc-950 text-white">
         Loading...
@@ -29,12 +44,20 @@ export default function Game({
     );
   }
 
+  const myName = isPlayerX
+    ? room.players.X?.name
+    : room.players.O?.name;
+
+  const opponentName = isPlayerX
+    ? room.players.O?.name
+    : room.players.X?.name;
+
   async function handleLeave() {
     if (!confirm("Leave this match?")) return;
 
     await leaveRoom(roomId);
 
-    window.location.reload();
+    onLeave();
   }
 
   return (
@@ -46,7 +69,7 @@ export default function Game({
 
           <div className="mb-6 flex w-full max-w-3xl items-center justify-between rounded-xl border border-cyan-500 px-6 py-3">
             <div>
-              Room:
+              Room •
               <span className="ml-2 font-bold">
                 {roomId}
               </span>
@@ -69,6 +92,9 @@ export default function Game({
           <StatusBar
             currentPlayer={game.currentPlayer}
             activeBoard={game.activeBoard}
+            isMyTurn={canPlay}
+            myName={myName}
+            opponentName={opponentName}
           />
 
           <Board
@@ -81,7 +107,19 @@ export default function Game({
 
       <GameOverModal
         winner={game.winner}
+        winnerName={
+          game.winner === "X"
+            ? room.players.X?.name
+            : game.winner === "O"
+            ? room.players.O?.name
+            : undefined
+        }
         onRestart={restart}
+      />
+
+      <HostLeftModal
+        open={roomClosed}
+        onClose={onLeave}
       />
     </>
   );

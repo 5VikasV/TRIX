@@ -1,7 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
 
 import { db } from "../firebase/config";
+import {
+  playJoin,
+  playCountdown,
+  stopCountdown,
+} from "../utils/sound";
 
 type WaitingRoomProps = {
   roomId: string;
@@ -15,6 +20,8 @@ export default function WaitingRoom({
   const [players, setPlayers] = useState(1);
   const [copied, setCopied] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
+
+  const joinPlayed = useRef(false);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -30,22 +37,27 @@ export default function WaitingRoom({
 
         setPlayers(count);
 
-        if (count === 2 && countdown === null) {
+        if (count === 2 && !joinPlayed.current) {
+          playJoin();
+          joinPlayed.current = true;
           setCountdown(3);
         }
       }
     );
 
     return unsubscribe;
-  }, [roomId, countdown]);
+  }, [roomId]);
 
   useEffect(() => {
     if (countdown === null) return;
 
     if (countdown === 0) {
+      stopCountdown();
       onStart();
       return;
     }
+
+    playCountdown();
 
     const timer = setTimeout(() => {
       setCountdown((c) => (c ?? 1) - 1);
@@ -54,8 +66,29 @@ export default function WaitingRoom({
     return () => clearTimeout(timer);
   }, [countdown, onStart]);
 
-  async function copyCode() {
-    await navigator.clipboard.writeText(roomId);
+  async function shareInvite() {
+    const inviteLink = `${window.location.origin}/?room=${roomId}`;
+
+    const shareText = `🎮 Join my TRIX match!
+
+Room Code: ${roomId}
+
+Or simply tap the link below:
+${inviteLink}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "TRIX - Ultimate Tic Tac Toe",
+          text: shareText,
+        });
+        return;
+      } catch {
+        // User cancelled sharing
+      }
+    }
+
+    await navigator.clipboard.writeText(shareText);
 
     setCopied(true);
 
@@ -81,10 +114,10 @@ export default function WaitingRoom({
         </div>
 
         <button
-          onClick={copyCode}
+          onClick={shareInvite}
           className="mt-4 w-full rounded-xl bg-cyan-500 py-3 font-bold text-black hover:bg-cyan-400"
         >
-          {copied ? "Copied ✓" : "Copy Room Code"}
+          {copied ? "Invite Copied ✓" : "Share Invite"}
         </button>
 
         <div className="mt-8 text-center">
@@ -105,7 +138,7 @@ export default function WaitingRoom({
 
         {players === 2 && countdown !== null && (
           <div className="mt-8 text-center">
-            <p className="text-green-400 font-bold">
+            <p className="font-bold text-green-400">
               Opponent Connected ✓
             </p>
 

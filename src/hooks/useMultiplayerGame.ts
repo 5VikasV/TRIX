@@ -16,12 +16,14 @@ export default function useMultiplayerGame(
   const [game, setGame] = useState<GameState | null>(null);
   const [room, setRoom] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
   const [roomClosed, setRoomClosed] = useState(false);
   const [opponentLeft, setOpponentLeft] = useState(false);
 
   useEffect(() => {
     const unsubscribe = listenToRoom(roomId, (data) => {
       if (!data) {
+        setLoading(false);
         setRoomClosed(true);
         return;
       }
@@ -32,17 +34,21 @@ export default function useMultiplayerGame(
 
       const uid = auth.currentUser?.uid;
 
-      const isHost = data.players.X === uid;
-      const isGuest = data.players.O === uid;
+      const isHost =
+        data.players.X?.uid === uid;
 
-      // Host is still here but guest left
-      if (isHost && data.players.O === null) {
+      const isGuest =
+        data.players.O?.uid === uid;
+
+      if (
+        isHost &&
+        data.players.O === null
+      ) {
         setOpponentLeft(true);
       } else {
         setOpponentLeft(false);
       }
 
-      // Guest got kicked because room vanished
       if (!isHost && !isGuest) {
         setRoomClosed(true);
       }
@@ -51,19 +57,11 @@ export default function useMultiplayerGame(
     return unsubscribe;
   }, [roomId]);
 
-  useEffect(() => {
-    if (!roomClosed) return;
-
-    alert("The room has been closed.");
-
-    window.location.reload();
-  }, [roomClosed]);
-
   const isPlayerX =
-    room?.players?.X === auth.currentUser?.uid;
+    room?.players?.X?.uid === auth.currentUser?.uid;
 
   const isPlayerO =
-    room?.players?.O === auth.currentUser?.uid;
+    room?.players?.O?.uid === auth.currentUser?.uid;
 
   const canPlay =
     (isPlayerX && game?.currentPlayer === "X") ||
@@ -98,11 +96,12 @@ export default function useMultiplayerGame(
     room,
     game,
     loading,
+    roomClosed,
+    opponentLeft,
     isPlayerX,
     isPlayerO,
     canPlay,
     play,
     restart,
-    opponentLeft,
   };
 }

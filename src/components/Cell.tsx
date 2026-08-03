@@ -1,4 +1,5 @@
 import type { Cell as CellType } from "../types/game";
+import { playClick } from "../utils/sound";
 
 type CellProps = {
   value: CellType;
@@ -9,9 +10,14 @@ export default function Cell({
   value,
   onClick,
 }: CellProps) {
+  function handleClick() {
+    playClick();
+    onClick();
+  }
+
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
       className="
         h-16
         w-16
