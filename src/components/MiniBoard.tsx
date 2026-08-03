@@ -1,5 +1,8 @@
 import Cell from "./Cell";
-import type { MiniBoard as MiniBoardType, Player } from "../types/game";
+import type {
+  MiniBoard as MiniBoardType,
+  Player,
+} from "../types/game";
 
 type MiniBoardProps = {
   board: MiniBoardType;
@@ -20,14 +23,19 @@ export default function MiniBoard({
     <div
       className={`
         relative
+
         grid
         grid-cols-3
-        gap-3
-        rounded-2xl
+
+        gap-[clamp(0.5rem,0.8vw,1rem)]
+
+        rounded-3xl
+
         border
-        p-3
-        transition-all
-        duration-300
+
+        bg-[#15181C]
+
+        p-[clamp(0.7rem,1vw,1.2rem)]
 
         ${
           active
@@ -49,16 +57,20 @@ export default function MiniBoard({
           className="
             absolute
             inset-0
-            rounded-2xl
+
+            rounded-[1.6rem]
+
             bg-black/70
+
             backdrop-blur-sm
+
             flex
             items-center
             justify-center
           "
         >
           <span
-            className={`text-7xl font-black ${
+            className={`text-8xl font-black ${
               winner === "X"
                 ? "text-cyan-400"
                 : winner === "O"

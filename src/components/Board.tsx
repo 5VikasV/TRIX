@@ -11,24 +11,24 @@ export default function Board({
   onPlay,
 }: BoardProps) {
   return (
-    <section className="mt-6 flex w-full justify-center px-2 sm:px-4">
+    <section className="flex w-full justify-center py-4">
       <div
         className="
           grid
-          w-full
-          max-w-[920px]
           grid-cols-3
-          gap-2
-          sm:gap-3
-          lg:gap-5
-          rounded-2xl
-          sm:rounded-3xl
+
+          gap-[clamp(0.8rem,1vw,1.5rem)]
+
+          rounded-[2rem]
+
           border
-          border-zinc-800
-          bg-zinc-900/40
-          p-2
-          sm:p-4
-          lg:p-6
+          border-zinc-700
+
+          bg-[#1B1F24]
+
+          p-[clamp(1rem,1.5vw,2rem)]
+
+          shadow-2xl
         "
       >
         {game.boards.map((board, index) => (

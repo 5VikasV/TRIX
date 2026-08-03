@@ -19,25 +19,29 @@ export default function Cell({
     <button
       onClick={handleClick}
       className="
-        h-16
-        w-16
+        aspect-square
+
+        w-[clamp(3.8rem,5vw,5.5rem)]
+
         rounded-xl
+
         border
         border-zinc-700
-        bg-gradient-to-b
-        from-zinc-900
-        to-zinc-950
-        transition-all
-        duration-200
-        hover:border-cyan-400
-        hover:bg-zinc-800
-        hover:scale-105
-        active:scale-95
+
+        bg-[#101215]
+
         flex
         items-center
         justify-center
-        text-3xl
-        font-bold
+
+        text-[clamp(1.8rem,2.4vw,3rem)]
+        font-black
+
+        transition-colors
+        duration-150
+
+        hover:bg-[#171B20]
+        hover:border-cyan-400
       "
     >
       <span

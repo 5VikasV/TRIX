@@ -40,17 +40,18 @@ export default function useMultiplayerGame(
       const isGuest =
         data.players.O?.uid === uid;
 
-      if (
-        isHost &&
-        data.players.O === null
-      ) {
-        setOpponentLeft(true);
+      // Host waiting for another player
+      if (isHost) {
+        setOpponentLeft(data.players.O === null);
       } else {
         setOpponentLeft(false);
       }
 
+      // User is no longer part of this room
       if (!isHost && !isGuest) {
         setRoomClosed(true);
+      } else {
+        setRoomClosed(false);
       }
     });
 

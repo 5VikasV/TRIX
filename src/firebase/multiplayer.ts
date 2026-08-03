@@ -15,6 +15,8 @@ import {
 import { customAlphabet } from "nanoid";
 
 import { auth, db } from "./config";
+import { createGame } from "../engine/gameEngine";
+import { toFirestoreGame } from "./mappers";
 
 const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const nanoid = customAlphabet(alphabet, 5);
@@ -48,22 +50,7 @@ export async function createRoom(playerName: string) {
       O: null,
     },
 
-    // NEW
-    startingPlayer: null,
-
-    game: {
-      boards: Array.from({ length: 9 }, () => ({
-        cells: Array(9).fill(null),
-      })),
-      boardWinners: Array(9).fill(null),
-      activeBoard: null,
-
-      // Default value. We'll overwrite this after
-      // the host chooses who starts.
-      currentPlayer: "X",
-
-      winner: null,
-    },
+    game: toFirestoreGame(createGame()),
   });
 
   return roomId;
@@ -89,28 +76,29 @@ export async function joinRoom(
     throw new Error("Room already full");
   }
 
+  // 🎲 Fresh game every time someone joins
+  const newGame = createGame();
+
+  newGame.currentPlayer =
+    Math.random() < 0.5 ? "X" : "O";
+
+  console.log(
+    "FIRST PLAYER:",
+    newGame.currentPlayer
+  );
+
   await updateDoc(roomRef, {
     "players.O": {
       uid: auth.currentUser?.uid,
       name: playerName,
     },
+
     status: "playing",
+
+    game: toFirestoreGame(newGame),
   });
 
   return true;
-}
-
-// NEW
-export async function chooseStartingPlayer(
-  roomId: string,
-  player: "X" | "O"
-) {
-  const roomRef = doc(db, "rooms", roomId);
-
-  await updateDoc(roomRef, {
-    startingPlayer: player,
-    "game.currentPlayer": player,
-  });
 }
 
 export async function leaveRoom(roomId: string) {
@@ -133,7 +121,6 @@ export async function leaveRoom(roomId: string) {
     await updateDoc(roomRef, {
       "players.O": null,
       status: "waiting",
-      startingPlayer: null,
     });
   }
 }

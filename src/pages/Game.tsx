@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 
 import Header from "../components/Header";
-import StatusBar from "../components/StatusBar";
 import Board from "../components/Board";
+import PlayerPanel from "../components/PlayerPanel";
+import MatchPanel from "../components/MatchPanel";
 import GameOverModal from "../components/GameOverModal";
 import HostLeftModal from "../components/HostLeftModal";
 
@@ -26,7 +27,6 @@ export default function Game({
     loading,
     opponentLeft,
     roomClosed,
-    canPlay,
     isPlayerX,
   } = useMultiplayerGame(roomId);
 
@@ -38,7 +38,7 @@ export default function Game({
 
   if (loading || !game || !room) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-zinc-950 text-white">
+      <main className="min-h-screen flex items-center justify-center text-white">
         Loading...
       </main>
     );
@@ -62,47 +62,43 @@ export default function Game({
 
   return (
     <>
-      <main className="min-h-screen bg-zinc-950 text-white">
-        <div className="mx-auto flex max-w-7xl flex-col items-center px-6 py-10">
+      <main className="relative min-h-screen bg-transparent text-white">
+
+        {/* Dark overlay over the wallpaper */}
+        <div className="pointer-events-none absolute inset-0 bg-black/30" />
+
+        <div className="relative mx-auto max-w-[1800px] px-8 py-8">
 
           <Header />
 
-          <div className="mb-6 flex w-full max-w-3xl items-center justify-between rounded-xl border border-cyan-500 px-6 py-3">
-            <div>
-              Room •
-              <span className="ml-2 font-bold">
-                {roomId}
-              </span>
+          <div className="mt-8 grid grid-cols-[280px_1fr_280px] gap-8 items-start">
+
+            <PlayerPanel
+              myName={myName}
+              opponentName={opponentName}
+              isPlayerX={isPlayerX}
+              currentPlayer={game.currentPlayer}
+              opponentLeft={opponentLeft}
+            />
+
+            <div className="flex justify-center">
+              <Board
+                game={game}
+                onPlay={play}
+              />
             </div>
 
-            <button
-              onClick={handleLeave}
-              className="rounded-lg border border-red-500 px-4 py-2 text-sm font-semibold text-red-400 transition hover:bg-red-500 hover:text-white"
-            >
-              Leave Match
-            </button>
+            <MatchPanel
+              roomId={roomId}
+              currentPlayer={game.currentPlayer}
+              activeBoard={game.activeBoard}
+              onLeave={handleLeave}
+            />
+
           </div>
 
-          {opponentLeft && (
-            <div className="mb-4 rounded-xl border border-yellow-500 bg-yellow-500/10 px-6 py-3 text-yellow-300">
-              Opponent left the match. Waiting for another player...
-            </div>
-          )}
-
-          <StatusBar
-            currentPlayer={game.currentPlayer}
-            activeBoard={game.activeBoard}
-            isMyTurn={canPlay}
-            myName={myName}
-            opponentName={opponentName}
-          />
-
-          <Board
-            game={game}
-            onPlay={play}
-          />
-
         </div>
+
       </main>
 
       <GameOverModal

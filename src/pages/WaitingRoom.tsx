@@ -20,6 +20,7 @@ export default function WaitingRoom({
   const [players, setPlayers] = useState(1);
   const [copied, setCopied] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
+  const [startingPlayerName, setStartingPlayerName] = useState("");
 
   const joinPlayed = useRef(false);
 
@@ -40,6 +41,14 @@ export default function WaitingRoom({
         if (count === 2 && !joinPlayed.current) {
           playJoin();
           joinPlayed.current = true;
+
+          const starter =
+            room.game.currentPlayer === "X"
+              ? room.players.X?.name
+              : room.players.O?.name;
+
+          setStartingPlayerName(starter ?? "");
+
           setCountdown(3);
         }
       }
@@ -98,7 +107,7 @@ ${inviteLink}`;
   }
 
   return (
-    <main className="min-h-screen bg-zinc-950 flex items-center justify-center text-white">
+    <main className="min-h-screen flex items-center justify-center text-white">
       <div className="w-full max-w-md rounded-3xl border border-zinc-800 bg-zinc-900 p-8">
 
         <h1 className="text-center text-4xl font-black">
@@ -142,12 +151,12 @@ ${inviteLink}`;
               Opponent Connected ✓
             </p>
 
-            <p className="mt-4 text-6xl font-black text-cyan-400">
-              {countdown}
+            <p className="mt-4 text-xl font-bold text-cyan-400">
+              {startingPlayerName} starts first!
             </p>
 
-            <p className="mt-2 text-zinc-400">
-              Starting Game...
+            <p className="mt-4 text-6xl font-black text-cyan-400">
+              {countdown}
             </p>
           </div>
         )}
