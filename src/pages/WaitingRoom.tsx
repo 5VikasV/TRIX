@@ -82,22 +82,27 @@ export default function WaitingRoom({
 
 Room Code: ${roomId}
 
-Or simply tap the link below:
 ${inviteLink}`;
 
-    if (navigator.share) {
+    const isMobile =
+      /Android|iPhone|iPad|iPod/i.test(
+        navigator.userAgent
+      );
+
+    if (isMobile && navigator.share) {
       try {
         await navigator.share({
           title: "TRIX - Ultimate Tic Tac Toe",
           text: shareText,
+          url: inviteLink,
         });
         return;
       } catch {
-        // User cancelled sharing
+        // User cancelled
       }
     }
 
-    await navigator.clipboard.writeText(shareText);
+    await navigator.clipboard.writeText(inviteLink);
 
     setCopied(true);
 
@@ -124,9 +129,11 @@ ${inviteLink}`;
 
         <button
           onClick={shareInvite}
-          className="mt-4 w-full rounded-xl bg-cyan-500 py-3 font-bold text-black hover:bg-cyan-400"
+          className="mt-4 w-full rounded-xl bg-cyan-500 py-3 font-bold text-black transition hover:bg-cyan-400"
         >
-          {copied ? "Invite Copied ✓" : "Share Invite"}
+          {copied
+            ? "✓ Link Copied"
+            : "Copy Invite Link"}
         </button>
 
         <div className="mt-8 text-center">
